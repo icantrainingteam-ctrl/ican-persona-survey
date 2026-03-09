@@ -164,6 +164,54 @@ export const questions = [
     }
 ];
 
+// [NEW] Hidden Chain Questions (Deep-Dive)
+export const chainQuestions = [
+    {
+        id: 'cq_family',
+        text: {
+            kr: "[가족/가정 환경] 솔직히 지금 나를 가장 힘들게 하거나 숨 막히게 하는 이유는 무엇인가요?",
+            en: "[Family Environment] Honestly, what is the biggest reason you feel overwhelmed or suffocated right now?"
+        },
+        options: [
+            { text: { kr: "나를 향한 부모님의 지나친 기대와 간섭", en: "My parents' excessive expectations and interference." }, cause: 'family_pressure' },
+            { text: { kr: "가정 내 잦은 불화나 차가운 분위기", en: "Frequent conflicts or a cold atmosphere at home." }, cause: 'family_conflict' }
+        ]
+    },
+    {
+        id: 'cq_peer',
+        text: {
+            kr: "[교우/학교 폭력] 학교나 학원에서 누군가의 시선이나 행동 때문에 두렵거나 피하고 싶은 적이 있나요?",
+            en: "[Peer/School Violence] Have you ever felt afraid or wanted to avoid school/academy due to someone's gaze or actions?"
+        },
+        options: [
+            { text: { kr: "은근히 나를 따돌리거나 험담하는 분위기", en: "An atmosphere where I'm subtly excluded or gossiped about." }, cause: 'peer_isolation' },
+            { text: { kr: "직접적으로 가해지는 위협이나 갈등", en: "Direct threats, bullying, or severe conflicts." }, cause: 'peer_conflict' }
+        ]
+    },
+    {
+        id: 'cq_academic',
+        text: {
+            kr: "[학업 트라우마] 공부와 관련해서 내 마음에 가장 깊게 남은 상처는 무엇인가요?",
+            en: "[Academic Trauma] What is the deepest wound left in your heart regarding studying?"
+        },
+        options: [
+            { text: { kr: "아무리 노력해도 성적이 오르지 않았던 뼈아픈 실패 경험", en: "The bitter experience of failing despite trying my absolute best." }, cause: 'academic_helplessness' },
+            { text: { kr: "다른 친구들이나 형제자매와 계속해서 비교당했던 기억", en: "The memory of constantly being compared to friends or siblings." }, cause: 'academic_comparison' }
+        ]
+    },
+    {
+        id: 'cq_future',
+        text: {
+            kr: "[진로/미래 불안] 미래를 떠올리면 어떤 감정이 가장 먼저 드나요?",
+            en: "[Future Anxiety] What is the first emotion that comes to mind when you think about the future?"
+        },
+        options: [
+            { text: { kr: "내가 뭘 좋아하는지도 모르겠고, 앞으로 어떻게 살아야 할지 막막한 두려움", en: "The overwhelming fear of not knowing what I like or how I should live." }, cause: 'future_lost' },
+            { text: { kr: "원하는 꿈이 있지만 이룰 수 없을 것 같다는 깊은 절망감", en: "Deep despair that I won't be able to achieve the dream I want." }, cause: 'future_despair' }
+        ]
+    }
+];
+
 export const personas = [
     // Group 1: Psychological Risk (High P, Low/Med S, Var A)
     {
@@ -368,7 +416,62 @@ export const personas = [
     }
 ];
 
-export const calculatePersona = (pScore, sScore, aScore) => {
+// Enhanced persona calculator that takes the root cause into account
+export const calculatePersona = (pScore, sScore, aScore, rootCause = null) => {
     const matched = personas.find(persona => persona.condition(pScore, sScore, aScore));
-    return matched || personas[personas.length - 1];
+    const basePersona = matched || personas[personas.length - 1];
+
+    // If a hidden chain question (Root Cause) was answered, we inject a highly personalized deep-dive prefix.
+    if (rootCause) {
+        let deepAdviceKr = "";
+        let deepAdviceEn = "";
+
+        switch (rootCause) {
+            case 'family_pressure':
+                deepAdviceKr = "[상담가 코멘트] 지나친 가족의 기대가 당신의 숨을 막히게 했군요. 이 진단은 당신이 부족해서가 아니라, 너무 무거운 짐을 지고 있음을 보여줍니다. ";
+                deepAdviceEn = "[Counselor Note] The crushing weight of family expectations has been suffocating you. This result shows you are carrying too heavy a burden, not that you are lacking. ";
+                break;
+            case 'family_conflict':
+                deepAdviceKr = "[상담가 코멘트] 가정 내 차가운 공기와 갈등 속에서 홀로 견디느라 정말 고생 많았습니다. 그 아픔은 당신의 잘못이 결코 아닙니다. ";
+                deepAdviceEn = "[Counselor Note] You've worked so hard enduring the cold air and conflicts alone at home. That pain is absolutely not your fault. ";
+                break;
+            case 'peer_isolation':
+                deepAdviceKr = "[상담가 코멘트] 무리 안에서 은근히 소외당하는 느낌은 상상 이상으로 참담합니다. 당신의 가용 에너지가 바닥난 이유는 사람들에게 다친 상처 때문입니다. ";
+                deepAdviceEn = "[Counselor Note] Feeling subtly isolated in a group is devastating. Your energy is depleted precisely because of the emotional wounds from others. ";
+                break;
+            case 'peer_conflict':
+                deepAdviceKr = "[🚨 상담가 긴급 핀플래그] 학교 폭력이나 직접적 갈등은 즉각적인 보호와 격리가 필요한 사안입니다. 가장 먼저 안전한 피난처를 찾아야 합니다. ";
+                deepAdviceEn = "[🚨 Counselor Pin-Flag] Direct conflict or bullying requires immediate protection. Finding a safe haven is your absolute priority right now. ";
+                break;
+            case 'academic_helplessness':
+                deepAdviceKr = "[상담가 코멘트] 노력해도 안 된다는 뼈아픈 좌절감이 학습 무기력을 만들었군요. 큰 목표를 다 버리고 아주 작은 성공 하나만 다시 찾아봅시다. ";
+                deepAdviceEn = "[Counselor Note] The bitter frustration of trying and failing has bred learned helplessness. Let's drop the big goals and just look for one tiny win. ";
+                break;
+            case 'academic_comparison':
+                deepAdviceKr = "[상담가 코멘트] 끝없는 비교에 시달리며 자존감이 많이 깎여나갔습니다. 타인의 트랙에서 내려와, 오직 어제의 나와 경쟁하는 연습이 필요합니다. ";
+                deepAdviceEn = "[Counselor Note] Constant comparison has chipped away at your self-esteem. You need to step off their track and only compete with who you were yesterday. ";
+                break;
+            case 'future_lost':
+                deepAdviceKr = "[상담가 코멘트] 아무런 목적지를 찾지 못해 길을 잃은 두려움이 당신을 멈춰 세웠습니다. 방황하는 것은 청춘의 특권이니 조급해하지 마세요. ";
+                deepAdviceEn = "[Counselor Note] The fear of having no destination has stopped you in your tracks. Wandering is a privilege of youth, so don't be impatient. ";
+                break;
+            case 'future_despair':
+                deepAdviceKr = "[상담가 코멘트] 원하는 꿈이 있는데도 상황 때문에 이룰 수 없다는 절망감은 너무나 아픕니다. 하지만 인생의 경로는 생각보다 훨씬 다양하게 열려있습니다. ";
+                deepAdviceEn = "[Counselor Note] It is deeply painful to feel you can't achieve your dream due to circumstances. But the paths of life are far more diverse than you think. ";
+                break;
+            default:
+                break;
+        }
+
+        // Clone the persona so we don't mutate the base data, and prepend the custom deep advice.
+        return {
+            ...basePersona,
+            advice: {
+                kr: deepAdviceKr + basePersona.advice.kr,
+                en: deepAdviceEn + basePersona.advice.en
+            }
+        };
+    }
+
+    return basePersona;
 };
