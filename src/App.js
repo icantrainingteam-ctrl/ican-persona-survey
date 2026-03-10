@@ -11,6 +11,7 @@ function App() {
 
   // Hidden Counselor View State
   const [showCounselorView, setShowCounselorView] = useState(false);
+  const counselorRef = React.useRef(null);
 
   const t = (textObj) => textObj ? (textObj[lang] || textObj['kr']) : '';
 
@@ -51,13 +52,18 @@ function App() {
     const pin = window.prompt(lang === 'kr' ? '상담가용 비밀번호를 입력하세요:' : 'Enter Counselor PIN:');
     if (pin === '1441') {
       setShowCounselorView(true);
+      setTimeout(() => {
+        if (counselorRef.current) {
+          counselorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     } else if (pin !== null && pin !== '') {
       alert(lang === 'kr' ? '비밀번호가 일치하지 않습니다.' : 'Incorrect PIN.');
     }
   };
 
   return (
-    <div className="min-h-screen mesh-bg flex flex-col items-center justify-center p-4 selection:bg-teal-200">
+    <div className="min-h-screen mesh-bg flex flex-col items-center p-4 selection:bg-teal-200 py-12 md:py-20">
 
       {/* Language Toggle Navbar */}
       <div className="absolute top-4 right-4 z-50">
@@ -352,7 +358,7 @@ function App() {
 
               {/* Counselor & Parent Triage Report (Requires PIN) */}
               {showCounselorView && (
-                <div className="mt-10 border-t-2 border-dashed border-slate-300 pt-10 animate-fade-in custom-scrollbar">
+                <div ref={counselorRef} className="mt-10 border-t-2 border-dashed border-slate-300 pt-10 animate-fade-in custom-scrollbar">
                   <div className="flex items-center mb-6">
                     <HeartPulse className="w-7 h-7 text-fuchsia-500 mr-3 animate-pulse" />
                     <h3 className="text-2xl font-black text-slate-800">
