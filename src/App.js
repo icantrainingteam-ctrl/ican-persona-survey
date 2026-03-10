@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ArrowRight, Loader2, RefreshCcw, BookOpen, Briefcase, GraduationCap, Globe, HeartPulse } from 'lucide-react';
+import { ChevronRight, ArrowRight, Loader2, RefreshCcw, BookOpen, Briefcase, GraduationCap, Globe, HeartPulse, HelpCircle } from 'lucide-react';
 import { questions, chainQuestions, calculatePersona } from './data/surveyData';
 
 function App() {
@@ -110,15 +110,124 @@ function App() {
                 ? '12개의 간단한 질문으로 당신의 현재 심리 상태, 학업 유형을 분석하고 미래 정체성을 발견해 보세요.'
                 : 'Analyze your psychological state and academic type with 12 simple questions to discover your future identity.'}
             </p>
-            <button
-              onClick={handleStart}
-              className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-slate-900 font-sans rounded-full hover:bg-slate-800 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-slate-900/20"
-            >
-              {lang === 'kr' ? '진단 시작하기' : 'Start the Survey'}
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <button
+                onClick={handleStart}
+                className="group relative w-full md:w-auto inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-slate-900 font-sans rounded-full hover:bg-slate-800 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-slate-900/20"
+              >
+                {lang === 'kr' ? '진단 시작하기' : 'Start the Survey'}
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={() => setStep('question_types')}
+                className="group relative w-full md:w-auto inline-flex items-center justify-center px-8 py-4 font-bold text-slate-700 transition-all duration-200 bg-white border-2 border-slate-200 font-sans rounded-full hover:bg-slate-50 hover:border-slate-300 hover:shadow hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-slate-100"
+              >
+                <HelpCircle className="mr-2 w-5 h-5 text-slate-400 group-hover:text-teal-500 transition-colors" />
+                {lang === 'kr' ? '질문 유형 안내' : 'Question Types Guide'}
+              </button>
+            </div>
             <div className="mt-8 text-sm text-slate-400">
               ICAN Student Persona Diagnostic Engine v1.1.1 (Deep Analysis)
+            </div>
+          </div>
+        )}
+
+        {/* QUESTION TYPES GUIDE SCREEN */}
+        {step === 'question_types' && (
+          <div className="glass rounded-3xl p-6 md:p-10 shadow-xl animate-fade-in border border-white/40 max-h-[85vh] overflow-y-auto custom-scrollbar">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                <HelpCircle className="w-6 h-6" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-800">
+                {lang === 'kr' ? '질문 유형 및 진단 구조' : 'Question Types & Structure'}
+              </h2>
+            </div>
+            
+            <p className="text-slate-600 mb-8 leading-relaxed text-lg">
+              {lang === 'kr' 
+                ? '본 진단은 표면적인 성적 너머의 내면적 에너지를 파악하기 위해 3가지 핵심 축(P, S, A)과 1가지 심층 축(Root Cause)으로 정교하게 설계되었습니다. 학생의 행동 이면에 숨은 진짜 상처를 찾아 치유를 돕는 것을 목표로 합니다.'
+                : 'This survey is delicately designed with 3 core axes (P, S, A) and 1 deep axis (Root Cause) to understand the internal energy beyond superficial grades. Our goal is to find the hidden wounds behind a student\'s behavior and help them heal.'}
+            </p>
+
+            <div className="space-y-6">
+              {/* Psychological */}
+              <div className="bg-white/70 p-6 rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-2 h-full bg-teal-400 group-hover:bg-teal-500 transition-colors"></div>
+                <h3 className="text-xl font-bold text-teal-800 mb-2 flex items-center">
+                  <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded text-sm mr-3 font-black">P</span>
+                  {lang === 'kr' ? '심리적 요인 (Psychological)' : 'Psychological Factors'}
+                </h3>
+                <p className="text-slate-700 mb-3 font-medium">
+                  {lang === 'kr' ? '"내면의 에너지가 고갈되었는가?"' : '"Is the internal energy depleted?"'}
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  {lang === 'kr' 
+                    ? '단순히 "공부를 안 한다"가 아니라, 공부할 정신적 에너지 자체가 바닥난 번아웃 또는 우울 상태인지 감지합니다. 무기력, 완벽주의로 인한 극심한 불안, 회피성 도피(스마트폰/수면) 성향을 파악합니다.'
+                    : 'We detect whether the student is simply "not studying" or if they are in a state of burnout/depression where their mental energy is completely depleted. It assesses lethargy, severe anxiety from perfectionism, and escapist tendencies.'}
+                </p>
+              </div>
+
+              {/* Social */}
+              <div className="bg-white/70 p-6 rounded-2xl border border-sky-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-2 h-full bg-sky-400 group-hover:bg-sky-500 transition-colors"></div>
+                <h3 className="text-xl font-bold text-sky-800 mb-2 flex items-center">
+                  <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded text-sm mr-3 font-black">S</span>
+                  {lang === 'kr' ? '사회적 요인 (Social)' : 'Social Factors'}
+                </h3>
+                <p className="text-slate-700 mb-3 font-medium">
+                  {lang === 'kr' ? '"관계가 학업의 발목을 잡고 있는가?"' : '"Are relationships hindering academics?"'}
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  {lang === 'kr' 
+                    ? '친구가 없어서 생기는 "고립형 우울"인지, 반대로 또래 압력과 친구에게 너무 의존해서 생기는 "타인 의존형" 장애인지 진단합니다. 교우 갈등 조짐이나 은둔 지수를 함께 판단합니다.'
+                    : 'It diagnoses whether the issue is "isolated depression" due to lack of friends, or a "peer-dependent" tendency resulting from peer pressure. It also evaluates signs of peer conflict or social withdrawal indices.'}
+                </p>
+              </div>
+
+              {/* Academic */}
+              <div className="bg-white/70 p-6 rounded-2xl border border-indigo-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-2 h-full bg-indigo-400 group-hover:bg-indigo-500 transition-colors"></div>
+                <h3 className="text-xl font-bold text-indigo-800 mb-2 flex items-center">
+                  <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded text-sm mr-3 font-black">A</span>
+                  {lang === 'kr' ? '학업적 요인 (Academic)' : 'Academic Factors'}
+                </h3>
+                <p className="text-slate-700 mb-3 font-medium">
+                  {lang === 'kr' ? '"정확한 방향과 동기를 가지고 있는가?"' : '"Do they have clear direction and motivation?"'}
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  {lang === 'kr' 
+                    ? '책상에 앉아있는 물리적 "양"이 아니라, 주도적인 학습 능력과 메타인지(자기 객관화) 수준인 "질"을 평가합니다. 실패에 대처하는 회복탄력성과 외적/내적 파워 동기를 분별합니다.'
+                    : 'It evaluates the "quality" of study—proactive learning ability and metacognition—rather than just the physical "quantity" of time at a desk. It separates resilience against failure from external/internal motivations.'}
+                </p>
+              </div>
+
+              {/* Root Cause (Deep Dive) */}
+              <div className="bg-slate-900 border border-indigo-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-fuchsia-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <h3 className="text-xl font-bold text-fuchsia-300 mb-2 flex items-center relative z-10">
+                  <HeartPulse className="w-6 h-6 mr-3 text-fuchsia-400 animate-pulse" />
+                  {lang === 'kr' ? '심층 꼬리 질문 (Root Cause Diagnostic)' : 'Deep Chain Diagnostic (Root Cause)'}
+                </h3>
+                <p className="text-indigo-200 mb-3 font-medium relative z-10">
+                  {lang === 'kr' ? '"표면적 증상 아래, 진짜 상처는 무엇인가?"' : '"Beneath surface symptoms, what is the true wound?"'}
+                </p>
+                <p className="text-indigo-100/80 text-sm leading-relaxed relative z-10">
+                  {lang === 'kr' 
+                    ? 'P, S, A 문항에서 특정 위험 징후가 감지되면 숨겨진 심층 질문 시스템이 트리거(Trigger)됩니다. 가정 내 압박, 학교 폭력, 학습 트라우마(끝없는 비교), 미래에 대한 짙은 절망감 등 진짜 원인을 찾아내어 부모님과 상담가가 아이를 깊이 이해하고 실질적 치유로 인도하도록 돕습니다.'
+                    : 'When specific risk signs are detected in P,S,A questions, hidden deep-dive questions are triggered. By identifying the real cause—such as family pressure, bullying, academic trauma, or deep despair—we help guardians and paths lead to actual healing.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={() => setStep('welcome')}
+                className="group relative inline-flex items-center justify-center px-8 py-3 font-bold text-slate-700 transition-all duration-200 bg-white border border-slate-200 hover:bg-slate-50 font-sans rounded-full hover:shadow"
+              >
+                <ArrowRight className="mr-2 w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform text-slate-400 group-hover:text-slate-600" />
+                {lang === 'kr' ? '메인으로 돌아가기' : 'Back to Home'}
+              </button>
             </div>
           </div>
         )}
