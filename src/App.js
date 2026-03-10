@@ -12,7 +12,7 @@ function App() {
   // Hidden Counselor View State
   const [showCounselorView, setShowCounselorView] = useState(false);
 
-  const t = (textObj) => textObj[lang] || textObj['kr'];
+  const t = (textObj) => textObj ? (textObj[lang] || textObj['kr']) : '';
 
   const toggleLanguage = () => setLang(prev => prev === 'kr' ? 'en' : 'kr');
 
@@ -314,7 +314,7 @@ function App() {
                     {lang === 'kr' ? '추천 미래 직업군' : 'Recommended Careers'}
                   </h4>
                   <ul className="space-y-2">
-                    {t(resultPersona.careers).map((career, i) => (
+                    {(Array.isArray(t(resultPersona.careers)) ? t(resultPersona.careers) : []).map((career, i) => (
                       <li key={i} className="flex items-center text-indigo-700 font-medium whitespace-break-spaces">
                         <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mr-2"></div> {career}
                       </li>
@@ -328,7 +328,7 @@ function App() {
                     {lang === 'kr' ? '추천 대학 전공' : 'Recommended Majors'}
                   </h4>
                   <ul className="space-y-2">
-                    {t(resultPersona.majors).map((major, i) => (
+                    {(Array.isArray(t(resultPersona.majors)) ? t(resultPersona.majors) : []).map((major, i) => (
                       <li key={i} className="flex items-center text-sky-700 font-medium">
                         <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mr-2"></div> {major}
                       </li>

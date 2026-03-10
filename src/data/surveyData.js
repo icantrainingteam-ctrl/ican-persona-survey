@@ -300,6 +300,14 @@ export const calculatePersona = (pScore, sScore, aScore, rScore = 0) => {
             advice: {
                 kr: "지금 당장 앞만 보고 달리면 영원히 멈출 수도 있습니다. 자신을 자책하지 말고 '아무것도 안 해도 되는 완벽한 휴식'을 당신에게 선물하세요.",
                 en: "Running blindly now might stop you forever. Don't blame yourself; gift yourself 'a perfect rest where nothing is required'."
+            },
+            careers: {
+                kr: ["수면 및 휴식 요망", "잠시 쉬어가기", "심리 상담가"],
+                en: ["Sleep and rest required", "Taking a break", "Psychological Counselor"]
+            },
+            majors: {
+                kr: ["결정 유보 (휴식 필요)", "예술치료학과", "심리학과"],
+                en: ["Undecided (Rest needed)", "Art Therapy", "Psychology"]
             }
         };
     } else if (sScore >= 18) {
@@ -314,6 +322,14 @@ export const calculatePersona = (pScore, sScore, aScore, rScore = 0) => {
             advice: {
                 kr: "당신의 가치는 남들의 평가나 시선으로 결정되지 않습니다. 스스로를 가장 먼저 챙기는 이기적인 용기가 지금 당신을 살릴 수 있습니다.",
                 en: "Your value isn't decided by others' evaluation. Selfish courage to prioritize yourself will save you right now."
+            },
+            careers: {
+                kr: ["나만의 공간 창작자", "도서관 사서", "프리랜서 디자이너", "동물 매개 치료사"],
+                en: ["Independent Creator", "Librarian", "Freelance Designer", "Animal Therapist"]
+            },
+            majors: {
+                kr: ["문예창작학과", "철학과", "수의학과", "컴퓨터공학과"],
+                en: ["Creative Writing", "Philosophy", "Veterinary Medicine", "Computer Science"]
             }
         };
     } else if (aScore >= 20) {
@@ -328,6 +344,14 @@ export const calculatePersona = (pScore, sScore, aScore, rScore = 0) => {
             advice: {
                 kr: "책상에 억지로 앉아있는 시간을 과감히 반으로 줄이세요. 그리고 '내가 진짜로 좋아하는 아주 작은 일' 하나를 먼저 찾아야 엔진이 다시 돌아갑니다.",
                 en: "Drastically cut your forced desk time in half. Find 'one tiny thing I truly like' first to restart your engine."
+            },
+            careers: {
+                kr: ["여행가", "스타트업 창업가", "유튜브 크리에이터", "마케터"],
+                en: ["Traveler", "Startup Founder", "Content Creator", "Marketer"]
+            },
+            majors: {
+                kr: ["자유전공학부", "경영학과", "미디어커뮤니케이션학과", "문화인류학과"],
+                en: ["Undecided/Liberal Arts", "Business Administration", "Media & Communications", "Anthropology"]
             }
         };
     } else if (pScore <= 8 && sScore <= 8 && aScore <= 8) {
@@ -342,6 +366,14 @@ export const calculatePersona = (pScore, sScore, aScore, rScore = 0) => {
             advice: {
                 kr: "지금의 빛나는 여유를 잃지 마세요. 당신 자체가 이미 강력한 무기를 가지고 있으니, 목표를 향해 정진하면 됩니다.",
                 en: "Never lose your brilliant composure. You already have absolute weapons; just march toward your goals."
+            },
+            careers: {
+                kr: ["CEO/경영자", "정책 연구원", "의료인", "글로벌 비즈니스 리더"],
+                en: ["CEO/Executive", "Policy Researcher", "Medical Professional", "Global Business Leader"]
+            },
+            majors: {
+                kr: ["의예과", "법학과", "경제학과", "공공정책학"],
+                en: ["Pre-Med", "Law", "Economics", "Public Policy"]
             }
         };
     } else {
@@ -356,6 +388,14 @@ export const calculatePersona = (pScore, sScore, aScore, rScore = 0) => {
             advice: {
                 kr: "다양한 가능성이 열려있습니다. 지금은 내가 무엇을 좋아하고 어떤 방법이 어울리는지 긍정적으로 자극을 줘볼 타이밍입니다.",
                 en: "Various possibilities are open. Time to positively stimulate yourself to see what you like and fits."
+            },
+            careers: {
+                kr: ["UX/UI 디자이너", "콘텐츠 기획자", "데이터 분석가", "융합 엔지니어"],
+                en: ["UX/UI Designer", "Content Planner", "Data Analyst", "Convergence Engineer"]
+            },
+            majors: {
+                kr: ["산업디자인과", "사회학과", "응용통계학과", "융합소프트웨어학부"],
+                en: ["Industrial Design", "Sociology", "Applied Statistics", "Software Engineering"]
             }
         };
     }
