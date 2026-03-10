@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { ChevronRight, ArrowRight, Loader2, RefreshCcw, BookOpen, Briefcase, GraduationCap, Globe, HeartPulse, HelpCircle } from 'lucide-react';
-import { questions, chainQuestions, calculatePersona } from './data/surveyData';
+import { questions, calculatePersona } from './data/surveyData';
 
 function App() {
   const [lang, setLang] = useState('kr');
   const [step, setStep] = useState('welcome');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [scores, setScores] = useState({ P: 0, S: 0, A: 0 });
+  const [scores, setScores] = useState({ P: 0, S: 0, A: 0, R: 0 });
   const [resultPersona, setResultPersona] = useState(null);
 
-  // New States for Hidden Chain Logic
-  const [activeChain, setActiveChain] = useState(null);
-  const [rootCause, setRootCause] = useState(null);
+  // Hidden Counselor View State
+  const [showCounselorView, setShowCounselorView] = useState(false);
+  const [, setCounselorTapCount] = useState(0);
 
   const t = (textObj) => textObj[lang] || textObj['kr'];
 
@@ -20,15 +20,15 @@ function App() {
   const handleStart = () => {
     setStep('survey');
     setCurrentQuestionIdx(0);
-    setScores({ P: 0, S: 0, A: 0 });
-    setActiveChain(null);
-    setRootCause(null);
+    setScores({ P: 0, S: 0, A: 0, R: 0 });
+    setShowCounselorView(false);
+    setCounselorTapCount(0);
   };
 
-  const finishSurvey = (finalScores, finalCause) => {
+  const finishSurvey = (finalScores) => {
     setStep('loading');
     setTimeout(() => {
-      const persona = calculatePersona(finalScores.P, finalScores.S, finalScores.A, finalCause);
+      const persona = calculatePersona(finalScores.P, finalScores.S, finalScores.A, finalScores.R);
       setResultPersona(persona);
       setStep('result');
     }, 2000);
@@ -39,41 +39,25 @@ function App() {
     if (optionScore.P) newScores.P += optionScore.P;
     if (optionScore.S) newScores.S += optionScore.S;
     if (optionScore.A) newScores.A += optionScore.A;
+    if (optionScore.R) newScores.R += optionScore.R;
     setScores(newScores);
-
-    // TRIGGER CHECK for Hidden Chain Question
-    if (!rootCause) {
-      let chainToTrigger = null;
-      if (currentQuestionIdx === 0 && optionScore.P >= 3) chainToTrigger = 'cq_family';
-      else if (currentQuestionIdx === 1 && optionScore.P >= 3) chainToTrigger = 'cq_academic';
-      else if (currentQuestionIdx === 2 && optionScore.P >= 3) chainToTrigger = 'cq_future';
-      else if (currentQuestionIdx === 6 && optionScore.S >= 4) chainToTrigger = 'cq_peer';
-
-      if (chainToTrigger) {
-        const chainObj = chainQuestions.find(cq => cq.id === chainToTrigger);
-        if (chainObj) {
-          setActiveChain(chainObj);
-          setStep('chain_survey');
-          return;
-        }
-      }
-    }
 
     if (currentQuestionIdx < questions.length - 1) {
       setCurrentQuestionIdx(p => p + 1);
     } else {
-      finishSurvey(newScores, rootCause);
+      finishSurvey(newScores);
     }
   };
 
-  const handleChainAnswer = (cause) => {
-    setRootCause(cause);
-    if (currentQuestionIdx < questions.length - 1) {
-      setCurrentQuestionIdx(p => p + 1);
-      setStep('survey'); // Return to normal survey flow
-    } else {
-      finishSurvey(scores, cause);
-    }
+  const handleSecretTap = () => {
+    setCounselorTapCount(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 5) { // 5 taps required
+        setShowCounselorView(true);
+        return 0;
+      }
+      return newCount;
+    });
   };
 
   return (
@@ -202,20 +186,20 @@ function App() {
                 </p>
               </div>
 
-              {/* Root Cause (Deep Dive) */}
-              <div className="bg-slate-900 border border-indigo-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden group">
+              {/* Clinical Triane (R) */}
+              <div className="bg-slate-900 border border-fuchsia-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-48 h-48 bg-fuchsia-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 group-hover:opacity-40 transition-opacity"></div>
                 <h3 className="text-xl font-bold text-fuchsia-300 mb-2 flex items-center relative z-10">
                   <HeartPulse className="w-6 h-6 mr-3 text-fuchsia-400 animate-pulse" />
-                  {lang === 'kr' ? '심층 꼬리 질문 (Root Cause Diagnostic)' : 'Deep Chain Diagnostic (Root Cause)'}
+                  {lang === 'kr' ? '임상 위험 경보 (Red/Orange Alert)' : 'Clinical Triage Alert (Red/Orange)'}
                 </h3>
                 <p className="text-indigo-200 mb-3 font-medium relative z-10">
                   {lang === 'kr' ? '"표면적 증상 아래, 진짜 상처는 무엇인가?"' : '"Beneath surface symptoms, what is the true wound?"'}
                 </p>
                 <p className="text-indigo-100/80 text-sm leading-relaxed relative z-10">
                   {lang === 'kr' 
-                    ? 'P, S, A 문항에서 특정 위험 징후가 감지되면 숨겨진 심층 질문 시스템이 트리거(Trigger)됩니다. 가정 내 압박, 학교 폭력, 학습 트라우마(끝없는 비교), 미래에 대한 짙은 절망감 등 진짜 원인을 찾아내어 부모님과 상담가가 아이를 깊이 이해하고 실질적 치유로 인도하도록 돕습니다.'
-                    : 'When specific risk signs are detected in P,S,A questions, hidden deep-dive questions are triggered. By identifying the real cause—such as family pressure, bullying, academic trauma, or deep despair—we help guardians and paths lead to actual healing.'}
+                    ? '24개의 투사적 문항(Projective Questions) 속에는 자살 사고, 절망감, 신체화 증상을 감지하는 임상 레드 플래그(R)가 숨겨져 있습니다. 임계치 초과 시 전문가용 별도 화면에만 🔴 적색 경보와 심리학적 논문 근거(Beck, Joiner 등)가 출력되어 즉각적 생명 보호를 위한 개입을 지원합니다.'
+                    : 'Hidden within the 24 projective questions are Clinical Red Flags (R) detecting suicidal ideation, hopelessness, and somatic symptoms. Exceeding thresholds triggers an exclusive Counselor-only Red Alert supported by psychological clinical evidence (Beck, Joiner, etc.) to ensure immediate life-saving interventions.'}
                 </p>
               </div>
             </div>
@@ -276,41 +260,6 @@ function App() {
           </div>
         )}
 
-        {/* HIDDEN CHAIN QUESTION SCREEN (DEEP-DIVE) */}
-        {step === 'chain_survey' && activeChain && (
-          <div className="bg-indigo-900/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl animate-fade-in border border-indigo-400/30 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-fuchsia-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-6 text-fuchsia-300">
-                <HeartPulse className="w-6 h-6 animate-pulse" />
-                <span className="font-semibold tracking-wide text-sm">{lang === 'kr' ? '심층 치유 여정' : 'Deep Healing Journey'}</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug mb-2">
-                {lang === 'kr' ? '네 마음을 깊이 이해하고 싶어.' : 'I want to deeply understand your heart.'}
-              </h2>
-              <p className="text-indigo-200 mb-8 text-lg">
-                {t(activeChain.text)}
-              </p>
-
-              <div className="space-y-4 text-slate-900">
-                {activeChain.options.map((option, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleChainAnswer(option.cause)}
-                    className="w-full text-left p-5 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 hover:border-fuchsia-300 transition-all duration-300 group flex items-center justify-between backdrop-blur-md"
-                  >
-                    <span className="text-lg text-indigo-50 font-medium group-hover:text-white transition-colors leading-relaxed">
-                      {t(option.text)}
-                    </span>
-                    <div className="w-8 h-8 rounded-full bg-indigo-800/50 flex items-center justify-center group-hover:bg-fuchsia-500/50 transition-colors shrink-0 ml-4 border border-indigo-500">
-                      <ChevronRight className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* LOADING SCREEN */}
         {step === 'loading' && (
@@ -392,13 +341,65 @@ function App() {
                 </div>
               </div>
 
-              <button
-                onClick={handleStart}
-                className="w-full p-4 rounded-xl flex items-center justify-center font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
-              >
-                <RefreshCcw className="w-5 h-5 mr-2" />
-                {lang === 'kr' ? '다시 진단하기' : 'Retake the Survey'}
-              </button>
+              {/* Secret Counselor Unlock Toggle */}
+              {!showCounselorView && (
+                <div className="mt-8 flex justify-end">
+                  <button 
+                    onClick={handleSecretTap} 
+                    className="w-4 h-4 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors opacity-50 cursor-pointer" 
+                    aria-label="Unlock Dashboard"
+                  ></button>
+                </div>
+              )}
+
+              {/* Counselor & Parent Triage Report (Requires 5 clicks on dot) */}
+              {showCounselorView && (
+                <div className="mt-10 border-t-2 border-dashed border-slate-300 pt-10 animate-fade-in custom-scrollbar">
+                  <div className="flex items-center mb-6">
+                    <HeartPulse className="w-7 h-7 text-fuchsia-500 mr-3 animate-pulse" />
+                    <h3 className="text-2xl font-black text-slate-800">
+                      {lang === 'kr' ? '전문가용 심층 진단 리포트 (보안)' : 'Clinical Counselor Report (Secure)'}
+                    </h3>
+                  </div>
+
+                  {/* Warning Box */}
+                  <div className={`p-6 md:p-8 rounded-2xl border-2 shadow-sm ${resultPersona.clinicalReport.color} mb-8`}>
+                    <h4 className="text-2xl font-black mb-4">{resultPersona.clinicalReport.title}</h4>
+                    <p className="font-semibold mb-6 text-lg leading-relaxed">{resultPersona.clinicalReport.description}</p>
+                    <div className="bg-white/60 p-5 rounded-xl text-sm italic border border-white/40">
+                      <span className="font-bold mb-1 block">📌 학술 논문 및 임상 근거:</span>
+                      {resultPersona.clinicalReport.references}
+                    </div>
+                  </div>
+
+                  {/* Raw Scores Box */}
+                  <div className="bg-slate-800 text-slate-200 p-6 md:p-8 rounded-2xl shadow-lg border border-slate-700">
+                    <h4 className="font-bold text-slate-100 mb-6 text-xl">학생 원시 스코어 보드 (Raw Data)</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                      <div className="bg-slate-700 p-4 rounded-xl shadow-inner">
+                        <span className="block text-xs md:text-sm font-semibold uppercase opacity-70 mb-1">우울/번아웃 (P)</span>
+                        <span className="text-3xl font-mono text-teal-300">{resultPersona.rawScores.pScore}</span>
+                        <span className="block text-[10px] text-slate-400 mt-1">/ 40</span>
+                      </div>
+                      <div className="bg-slate-700 p-4 rounded-xl shadow-inner">
+                        <span className="block text-xs md:text-sm font-semibold uppercase opacity-70 mb-1">고립/소외 (S)</span>
+                        <span className="text-3xl font-mono text-sky-300">{resultPersona.rawScores.sScore}</span>
+                        <span className="block text-[10px] text-slate-400 mt-1">/ 40</span>
+                      </div>
+                      <div className="bg-slate-700 p-4 rounded-xl shadow-inner">
+                        <span className="block text-xs md:text-sm font-semibold uppercase opacity-70 mb-1">무기력/압박 (A)</span>
+                        <span className="text-3xl font-mono text-indigo-300">{resultPersona.rawScores.aScore}</span>
+                        <span className="block text-[10px] text-slate-400 mt-1">/ 40</span>
+                      </div>
+                      <div className="bg-red-900/50 p-4 rounded-xl border border-red-500/30 text-red-200 shadow-inner">
+                        <span className="block text-xs md:text-sm font-bold uppercase opacity-90 mb-1">임상 징후 (R)</span>
+                        <span className="text-3xl font-mono text-red-400">{resultPersona.rawScores.rScore}</span>
+                        <span className="block text-[10px] text-red-400/50 mt-1">Red Flags</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
