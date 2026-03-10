@@ -11,7 +11,6 @@ function App() {
 
   // Hidden Counselor View State
   const [showCounselorView, setShowCounselorView] = useState(false);
-  const [, setCounselorTapCount] = useState(0);
 
   const t = (textObj) => textObj[lang] || textObj['kr'];
 
@@ -22,7 +21,6 @@ function App() {
     setCurrentQuestionIdx(0);
     setScores({ P: 0, S: 0, A: 0, R: 0 });
     setShowCounselorView(false);
-    setCounselorTapCount(0);
   };
 
   const finishSurvey = (finalScores) => {
@@ -49,15 +47,13 @@ function App() {
     }
   };
 
-  const handleSecretTap = () => {
-    setCounselorTapCount(prev => {
-      const newCount = prev + 1;
-      if (newCount >= 5) { // 5 taps required
-        setShowCounselorView(true);
-        return 0;
-      }
-      return newCount;
-    });
+  const handleUnlock = () => {
+    const pin = window.prompt(lang === 'kr' ? '상담가용 비밀번호를 입력하세요:' : 'Enter Counselor PIN:');
+    if (pin === '1441') {
+      setShowCounselorView(true);
+    } else if (pin !== null && pin !== '') {
+      alert(lang === 'kr' ? '비밀번호가 일치하지 않습니다.' : 'Incorrect PIN.');
+    }
   };
 
   return (
@@ -345,14 +341,16 @@ function App() {
               {!showCounselorView && (
                 <div className="mt-8 flex justify-end">
                   <button 
-                    onClick={handleSecretTap} 
-                    className="w-4 h-4 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors opacity-50 cursor-pointer" 
-                    aria-label="Unlock Dashboard"
-                  ></button>
+                    onClick={handleUnlock} 
+                    className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 transition-colors flex items-center justify-center opacity-30 hover:opacity-100 cursor-pointer text-slate-500 hover:text-slate-700" 
+                    title={lang === 'kr' ? '전문가 리포트 잠금 해제' : 'Unlock Counselor Report'}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  </button>
                 </div>
               )}
 
-              {/* Counselor & Parent Triage Report (Requires 5 clicks on dot) */}
+              {/* Counselor & Parent Triage Report (Requires PIN) */}
               {showCounselorView && (
                 <div className="mt-10 border-t-2 border-dashed border-slate-300 pt-10 animate-fade-in custom-scrollbar">
                   <div className="flex items-center mb-6">
